@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import Topbar from '$lib/components/Topbar.svelte';
   import {
     addDoc,
@@ -27,6 +27,7 @@
   let loadingError = false;
 
   let col: CollectionReference | null = null;
+  let unsub: (() => void) | null = null;
 
   function escapeHtml(s: string) {
     return String(s).replace(/[&<>"']/g, (c) => ({
@@ -47,7 +48,7 @@
     col = collection(db, 'guestbook');
     const q = query(col, orderBy('createdAt', 'desc'), limit(100));
 
-    const unsub = onSnapshot(
+    unsub = onSnapshot(
       q,
       (snap) => {
         loadingError = false;
@@ -58,9 +59,9 @@
         loadingError = true;
       }
     );
-
-    return () => unsub();
   });
+
+  onDestroy(() => unsub?.());
 
   async function submitForm(e: SubmitEvent) {
     e.preventDefault();
@@ -97,14 +98,14 @@
 </script>
 
 <svelte:head>
-  <title>alive — logbook</title>
+  <title>logbook</title>
 </svelte:head>
 
 <Topbar />
 
 <main class="wrap">
   <h1>logbook</h1>
-  <p class="muted">Leave a note—your name + a short message.</p>
+  <p class="muted">Leave a note!</p>
 
   <form class="block-form" on:submit={submitForm}>
     <div class="row">
@@ -153,4 +154,4 @@
   </section>
 </main>
 
-<footer class="site-footer">made with svelte + Need coffee</footer>
+<footer class="site-footer">made with svelte, I need caffiene &nbsp;·&nbsp; <span class="version">v{__COMMIT__}</span></footer>

@@ -2,7 +2,6 @@
     import { onMount } from 'svelte';
     import Topbar from '../lib/components/Topbar.svelte';
     import StatusBox from '../lib/components/StatusBox.svelte';
-    import { run } from 'svelte/legacy';
 
     let bootVisible = true;
     let flashGo = false;
@@ -22,7 +21,7 @@
     }
 
     async function runBoot() {
-        const lines = []
+        const lines: string[] = []
 
         let charDelay = 35;
         let linePause = 350;
@@ -100,7 +99,7 @@
 
 <main class="wrap">
   <h1 class:type-caret={!helloDone}>{helloText}</h1>
-  <p>I’m a Junior in high school, and I create stuff</p>
+  <p>Currently a high school student that does stuff sometimes</p>
 
   <section aria-label="my socials" class="ticker b-solid">
     <div class="ticker-head">my socials</div>
@@ -148,7 +147,7 @@
   storageKey="statusbox-now"
 />
 
-<footer class="site-footer">made with svelte + I need coffee</footer>
+<footer class="site-footer">made with svelte, I need some coffee &nbsp;·&nbsp; <span class="version">v{__COMMIT__}</span></footer>
 
 
 

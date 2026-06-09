@@ -89,4 +89,4 @@
   </section>
 </main>
 
-<footer class="site-footer">made with svelte + Need coffee</footer>
+<footer class="site-footer">made with svelte + Need coffee &nbsp;·&nbsp; <span class="version">v{__COMMIT__}</span></footer>

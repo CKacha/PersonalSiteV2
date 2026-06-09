@@ -216,6 +216,8 @@ body {
   padding-block: 2rem;
 }
 
+.version { font-size: 10px; }
+
 a, a:visited { color: var(--link); text-decoration: none; }
 a:hover      { color: var(--link-hover); text-decoration: underline; }
 a:active,
@@ -230,3 +232,28 @@ a:focus-visible {
 
 .repo-title a:hover,
 .card a:hover { color: var(--link-hover); }
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-block-start: 1.5rem;
+}
+
+.card {
+  border: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+}
+
+.repo-title { font-weight: 700; margin-block-end: 0.25rem; }
+.repo-desc  { color: var(--muted); font-size: 13px; margin-block-end: 0.4rem; }
+.repo-meta  { font-size: 11px; opacity: 0.5; display: flex; gap: 1rem; }
+
+.post-header { margin-block-end: 2rem; border-bottom: 1px solid var(--border); padding-block-end: 1rem; }
+
+.post-body { line-height: 1.7; }
+.post-body h2,
+.post-body h3 { margin-block-start: 2rem; }
+.post-body pre { background: var(--border); padding: 1rem; overflow-x: auto; }
+.post-body code { font-family: inherit; font-size: 0.9em; }
+.post-body :not(pre) > code { background: var(--border); padding: 1px 4px; }
