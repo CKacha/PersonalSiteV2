@@ -2,9 +2,7 @@ import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { mdsvex } from 'mdsvex';
 
-const base =
-  process.env.BASE_PATH ??
-  (process.env.NODE_ENV === 'production' ? '/PersonalSiteV2' : '');
+const base = process.env.BASE_PATH ?? '';
 
 const config = {
   extensions: ['.svelte', '.md'],
