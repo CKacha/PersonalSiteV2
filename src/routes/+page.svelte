@@ -12,8 +12,8 @@
 
     const socials = [
         { type: 'link', label: 'github', href: 'https://github.com/Ckacha'},
-        { type: 'text', label: 'slack'},
-        { type: 'text', label: 'email'},
+        { type: 'text', label: 'slack', href: "https://hackclub.slack.com/team/U0828FYS2UC"},
+        { type: 'text', label: 'email', href: "me@ckacha.dev"},
     ];
 
     function wait(ms: number) {
@@ -80,7 +80,7 @@
 </script>
 
 <svelte:head>
-    <title>alive</title>
+    <title>Home | Ckacha </title>
 </svelte:head>
 
 {#if bootVisible}
@@ -99,7 +99,7 @@
 
 <main class="wrap">
   <h1 class:type-caret={!helloDone}>{helloText}</h1>
-  <p>Currently a high school student that does stuff sometimes</p>
+  <p>I'm currently a high school student that makes things</p>
 
   <section aria-label="my socials" class="ticker b-solid">
     <div class="ticker-head">my socials</div>

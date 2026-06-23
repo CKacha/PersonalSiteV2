@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { PUBLIC_ADMIN_PASSWORD } from '$env/static/public';
     import { onMount } from 'svelte';
     import Topbar from '$lib/components/Topbar.svelte';
 
@@ -20,12 +19,9 @@
 
     type ProjectsStore = Record<string, ProjectConfig>;
 
-    let password = '';
-    let authenticated = false;
     let repos: Repo[] = [];
     let projectConfig: ProjectsStore = {};
     let loading = false;
-    let loginError = false;
     let saveMsg = '';
 
     function updateProject(name: string, patch: Partial<ProjectConfig>) {
@@ -33,23 +29,6 @@
             ...projectConfig,
             [name]: { ...projectConfig[name], ...patch }
         };
-    }
-
-    function login() {
-        if (PUBLIC_ADMIN_PASSWORD && password === PUBLIC_ADMIN_PASSWORD) {
-            authenticated = true;
-            loginError = false;
-            sessionStorage.setItem('admin_auth', '1');
-            fetchRepos();
-        } else {
-            loginError = true;
-        }
-    }
-
-    function logout() {
-        sessionStorage.removeItem('admin_auth');
-        authenticated = false;
-        password = '';
     }
 
     async function fetchRepos() {
@@ -92,10 +71,7 @@
                 projectConfig = JSON.parse(stored);
             } catch {}
         }
-        if (sessionStorage.getItem('admin_auth') === '1') {
-            authenticated = true;
-            fetchRepos();
-        }
+        fetchRepos();
     });
 </script>
 
@@ -104,128 +80,72 @@
 <main class="wrap">
     <h1>admin</h1>
 
-    {#if !authenticated}
-        <section class="login-box">
-            <p class="muted">enter password to access project manager</p>
-            <form on:submit|preventDefault={login} class="login-form">
-                <input
-                    type="password"
-                    bind:value={password}
-                    placeholder="password"
-                    class="pw-input"
-                    autocomplete="current-password"
-                />
-                <button type="submit" class="invert-btn">login</button>
-            </form>
-            {#if loginError}
-                <p class="err-msg">incorrect password</p>
-            {/if}
-        </section>
-    {:else}
-        <div class="admin-bar">
-            <p class="muted">toggle repos on/off and edit their descriptions</p>
-            <div class="admin-bar-actions">
-                <button class="invert-btn save-btn" on:click={save}>
-                    save{saveMsg ? ' — ' + saveMsg : ''}
-                </button>
-                <button class="invert-btn" on:click={logout}>logout</button>
-            </div>
-        </div>
+    <div class="admin-bar">
+        <p class="muted">toggle repos on/off and edit their descriptions</p>
+        <button class="invert-btn save-btn" on:click={save}>
+            save{saveMsg ? ' — ' + saveMsg : ''}
+        </button>
+    </div>
 
-        {#if loading}
-            <p class="muted">fetching repos...</p>
-        {:else if repos.length === 0}
-            <p class="muted">no repos found.</p>
-        {:else}
-            <div class="project-list">
-                {#each repos as repo (repo.name)}
-                    <div class="proj-row" class:proj-on={projectConfig[repo.name]?.enabled}>
-                        <div class="proj-top">
-                            <label class="toggle-wrap">
-                                <input
-                                    type="checkbox"
-                                    checked={projectConfig[repo.name]?.enabled ?? false}
-                                    on:change={(e) =>
-                                        updateProject(repo.name, {
-                                            enabled: e.currentTarget.checked
-                                        })}
-                                />
-                                <span class="toggle-tag">
-                                    {projectConfig[repo.name]?.enabled ? '[on] ' : '[off]'}
-                                </span>
-                            </label>
-                            <a
-                                href={repo.html_url}
-                                target="_blank"
-                                rel="noreferrer"
-                                class="proj-name">{repo.name}</a
-                            >
-                            <span class="proj-meta">
-                                ★{repo.stargazers_count} · {new Date(
-                                    repo.updated_at
-                                ).toLocaleDateString()}
-                            </span>
-                        </div>
-                        <div class="proj-desc-row">
-                            <span class="muted desc-label">desc:</span>
+    {#if loading}
+        <p class="muted">fetching repos...</p>
+    {:else if repos.length === 0}
+        <p class="muted">no repos found.</p>
+    {:else}
+        <div class="project-list">
+            {#each repos as repo (repo.name)}
+                <div class="proj-row" class:proj-on={projectConfig[repo.name]?.enabled}>
+                    <div class="proj-top">
+                        <label class="toggle-wrap">
                             <input
-                                type="text"
-                                class="desc-input"
-                                placeholder={repo.description ?? 'no description'}
-                                value={projectConfig[repo.name]?.description ?? ''}
-                                on:input={(e) =>
+                                type="checkbox"
+                                checked={projectConfig[repo.name]?.enabled ?? false}
+                                on:change={(e) =>
                                     updateProject(repo.name, {
-                                        description: e.currentTarget.value
+                                        enabled: e.currentTarget.checked
                                     })}
                             />
-                        </div>
+                            <span class="toggle-tag">
+                                {projectConfig[repo.name]?.enabled ? '[on] ' : '[off]'}
+                            </span>
+                        </label>
+                        <a
+                            href={repo.html_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            class="proj-name">{repo.name}</a
+                        >
+                        <span class="proj-meta">
+                            ★{repo.stargazers_count} · {new Date(
+                                repo.updated_at
+                            ).toLocaleDateString()}
+                        </span>
                     </div>
-                {/each}
-            </div>
-            <div class="save-bar">
-                <button class="invert-btn save-btn" on:click={save}>
-                    save changes{saveMsg ? ' — ' + saveMsg : ''}
-                </button>
-            </div>
-        {/if}
+                    <div class="proj-desc-row">
+                        <span class="muted desc-label">desc:</span>
+                        <input
+                            type="text"
+                            class="desc-input"
+                            placeholder={repo.description ?? 'no description'}
+                            value={projectConfig[repo.name]?.description ?? ''}
+                            on:input={(e) =>
+                                updateProject(repo.name, {
+                                    description: e.currentTarget.value
+                                })}
+                        />
+                    </div>
+                </div>
+            {/each}
+        </div>
+        <div class="save-bar">
+            <button class="invert-btn save-btn" on:click={save}>
+                save changes{saveMsg ? ' — ' + saveMsg : ''}
+            </button>
+        </div>
     {/if}
 </main>
 
 <style>
-    .login-box {
-        margin-block-start: 2rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        max-width: 32ch;
-    }
-
-    .login-form {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    .pw-input {
-        background: var(--bg);
-        border: 1px solid var(--border);
-        color: var(--ink);
-        font: inherit;
-        font-size: 13px;
-        padding: 3px 8px;
-        flex: 1;
-    }
-
-    .pw-input:focus {
-        outline: 1px solid var(--ink);
-    }
-
-    .err-msg {
-        color: var(--ink);
-        opacity: 0.7;
-        font-size: 12px;
-        margin: 0;
-    }
-
     .admin-bar {
         display: flex;
         align-items: flex-start;
@@ -233,12 +153,6 @@
         gap: 1rem;
         margin-block: 1.5rem 2rem;
         flex-wrap: wrap;
-    }
-
-    .admin-bar-actions {
-        display: flex;
-        gap: 0.5rem;
-        flex-shrink: 0;
     }
 
     .project-list {

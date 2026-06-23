@@ -43,7 +43,7 @@
     return escapeHtml(s).replace(/\n/g, '<br>');
   }
 
-  onMount(async () => {
+  onMount(async () => { 
     const { db } = await import('$lib/firebase');
     col = collection(db, 'guestbook');
     const q = query(col, orderBy('createdAt', 'desc'), limit(100));

@@ -1,6 +1,5 @@
-# PersonalSiteV2
+# PersonalSite_V2
 
-A remade personal site! The V2 version, V1 is gone....
+My reamde personal website about me!
 
-CLOUDFLARE I SWEAR
 ---
