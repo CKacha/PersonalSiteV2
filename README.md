@@ -1,5 +1,7 @@
 # PersonalSite_V2
 
-My reamde personal website about me!
+My personal website :p
+
+Check it out (here)[ckacha.dev]!
 
 ---
