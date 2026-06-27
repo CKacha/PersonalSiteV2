@@ -397,7 +397,7 @@
 
   .entry-card {
     border: 1px solid var(--border);
-    height: 200px;
+    aspect-ratio: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -456,9 +456,10 @@
   .entry-drawing {
     flex: 1;
     width: 100%;
-    object-fit: cover;
-    object-position: top left;
     min-height: 0;
+    object-fit: contain;
+    object-position: center;
+    background: #fff;
   }
 
   .modal-backdrop {
