@@ -2,3 +2,8 @@ name = "personalsitev2"
 pages_build_output_dir = "build"
 compatibility_date = "2026-06-16"
 
+[[d1_databases]]
+binding = "DB"
+database_name = "personalsitev2-logbook"
+database_id = "YOUR_D1_DATABASE_ID"
+

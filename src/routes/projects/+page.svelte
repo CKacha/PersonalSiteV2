@@ -19,7 +19,7 @@
                     <div class="project-name-row">
                         <span class="repo-title">{project.name}</span>
                         {#if project.subtitle}
-                            <span class="project-subtitle">— {project.subtitle}</span>
+                            <span class="project-subtitle">{project.subtitle}</span>
                         {/if}
                     </div>
                     {#if project.langs && project.langs.length > 0}
@@ -58,45 +58,3 @@
 
 <footer class="site-footer">made with svelte, I need some coffee &nbsp;·&nbsp; <span class="version">v{__COMMIT__}</span></footer>
 
-<style>
-    .project-card { display: flex; flex-direction: column; gap: 0.5rem; }
-
-    .project-top {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-
-    .project-name-row { display: flex; align-items: baseline; gap: 0.5rem; }
-
-    .project-subtitle { font-size: 12px; opacity: 0.5; }
-
-    .project-langs { display: flex; gap: 0.4rem; flex-shrink: 0; }
-
-    .lang-tag {
-        font-size: 11px;
-        border: 1px solid var(--border);
-        padding: 1px 6px;
-        opacity: 0.7;
-    }
-
-    .project-body {
-        display: flex;
-        gap: 1rem;
-        align-items: flex-start;
-    }
-
-    .project-left { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
-
-    .project-image {
-        width: 80px;
-        height: 54px;
-        object-fit: cover;
-        border: 1px solid var(--border);
-        flex-shrink: 0;
-    }
-
-    .project-links { display: flex; gap: 1rem; font-size: 12px; }
-</style>
