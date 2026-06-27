@@ -24,6 +24,43 @@
   let submitting = false;
   let statusMsg = '';
 
+  let deleteId: number | null = null;
+  let deletePassword = '';
+  let deleteError = '';
+  let deleting = false;
+
+  function openDelete(id: number) {
+    deleteId = id;
+    deletePassword = '';
+    deleteError = '';
+  }
+
+  function closeDelete() { deleteId = null; }
+
+  async function confirmDelete() {
+    if (!deletePassword) { deleteError = 'Password required.'; return; }
+    deleting = true;
+    deleteError = '';
+    try {
+      const res = await fetch('/api/logbook', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: deleteId, password: deletePassword }),
+      });
+      if (!res.ok) {
+        const data = await res.json() as { error?: string };
+        deleteError = data.error ?? 'Failed.';
+        return;
+      }
+      entries = entries.filter(e => e.id !== deleteId);
+      closeDelete();
+    } catch {
+      deleteError = 'Network error.';
+    } finally {
+      deleting = false;
+    }
+  }
+
   let canvas: HTMLCanvasElement;
   let isDrawing = false;
   let lastX = 0;
@@ -202,6 +239,7 @@
     {:else}
       {#each entries as entry (entry.id)}
         <article class="entry-card">
+          <button class="entry-delete" on:click={() => openDelete(entry.id)} aria-label="Delete entry">✕</button>
           {#if entry.type === 'draw'}
             <img class="entry-drawing" src={entry.drawing} alt="drawing by {entry.name}" />
             <div class="entry-footer">
@@ -300,6 +338,31 @@
   </div>
 {/if}
 
+{#if deleteId !== null}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div class="modal-backdrop" on:click|self={closeDelete}>
+    <div class="modal delete-modal" role="dialog" aria-modal="true">
+      <button class="modal-close" on:click={closeDelete} aria-label="Close">✕</button>
+      <p style="margin:0; font-size:13px;">enter password to delete this entry:</p>
+      <input
+        class="modal-field"
+        type="password"
+        bind:value={deletePassword}
+        placeholder="password"
+        on:keydown={(e) => e.key === 'Enter' && confirmDelete()}
+      />
+      <div class="bot-row">
+        <button class="invert-btn" on:click={closeDelete}>cancel</button>
+        <button class="invert-btn" on:click={confirmDelete} disabled={deleting}>
+          {deleting ? 'deleting...' : 'delete'}
+        </button>
+      </div>
+      {#if deleteError}<p class="status-msg">{deleteError}</p>{/if}
+    </div>
+  </div>
+{/if}
+
 <style>
   .logbook-wrap {
     display: grid;
@@ -338,7 +401,28 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: relative;
   }
+
+  .entry-delete {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font: inherit;
+    font-size: 11px;
+    line-height: 1;
+    padding: 2px 5px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 1;
+  }
+  .entry-card:hover .entry-delete { opacity: 1; }
+
+  .delete-modal { max-width: 340px; gap: 0.75rem; }
 
   .entry-header, .entry-footer {
     display: flex;

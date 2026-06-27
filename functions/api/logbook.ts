@@ -5,6 +5,7 @@ interface Env {
       bind(...values: unknown[]): { run(): Promise<void> };
     };
   };
+  DELETE_PASSWORD: string;
 }
 
 export async function onRequestGet({ env }: { env: Env }): Promise<Response> {
@@ -62,6 +63,24 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       return Response.json({ error: 'Invalid type.' }, { status: 400 });
     }
 
+    return Response.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    return Response.json({ error: 'Server error.' }, { status: 500 });
+  }
+}
+
+export async function onRequestDelete({ env, request }: { env: Env; request: Request }): Promise<Response> {
+  try {
+    const body = (await request.json()) as { id?: number; password?: string };
+
+    if (!body.password || body.password !== env.DELETE_PASSWORD) {
+      return Response.json({ error: 'Incorrect password.' }, { status: 403 });
+    }
+
+    if (!body.id) return Response.json({ error: 'ID required.' }, { status: 400 });
+
+    await env.DB.prepare('DELETE FROM entries WHERE id = ?').bind(body.id).run();
     return Response.json({ ok: true });
   } catch (e) {
     console.error(e);
