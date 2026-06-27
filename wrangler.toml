@@ -5,5 +5,5 @@ compatibility_date = "2026-06-16"
 [[d1_databases]]
 binding = "DB"
 database_name = "personalsitev2-logbook"
-database_id = "YOUR_D1_DATABASE_ID"
+database_id = "78c33f7d-586d-46f3-8674-cac4afdc8fd7"
 
