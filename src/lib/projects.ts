@@ -38,7 +38,7 @@ export const projects: Project[] = [
         name: 'Robby-Fischer',
         description: 'Created a robot arm capable of playing chess through an AI model trained by us on Hugging Face at an AMD sponsored hackathon called prototype!',
         langs: ['Python'],
-        image: '/images/prototype.png',
+        image: 'https://user-cdn.hackclub-assets.com/019f06be-9f2f-7aea-bdda-a91347136d99/prototype.gif',
         source: 'https://github.com/CKacha/Robby-Fischer',
         visit: 'https://github.com/CKacha/Robby-Fischer/blob/main/README.md',
     },

@@ -67,6 +67,17 @@
   let lastY = 0;
   let drawColor = '#000000';
   let brushSize = 4;
+  let cursorX = 0;
+  let cursorY = 0;
+  let showCursor = false;
+
+  let fullMessageEntry: Entry | null = null;
+
+  function truncate(text: string): { short: string; truncated: boolean } {
+    const sentences = text.match(/[^.!?]+[.!?]+/g) ?? [text];
+    if (sentences.length <= 3) return { short: text, truncated: false };
+    return { short: sentences.slice(0, 3).join(' ').trim(), truncated: true };
+  }
 
   function shuffle<T>(arr: T[]): T[] {
     const a = [...arr];
@@ -140,7 +151,14 @@
     lastX = x; lastY = y;
   }
 
+  function trackCursor(e: MouseEvent) {
+    const rect = canvas.getBoundingClientRect();
+    cursorX = e.clientX - rect.left;
+    cursorY = e.clientY - rect.top;
+  }
+
   function onDraw(e: MouseEvent | TouchEvent) {
+    if (e instanceof MouseEvent) trackCursor(e);
     if (!isDrawing) return;
     e.preventDefault();
     const ctx = canvas.getContext('2d')!;
@@ -182,9 +200,9 @@
         body.message = message.trim();
       } else {
         const tmp = document.createElement('canvas');
-        tmp.width = 500; tmp.height = 500;
-        tmp.getContext('2d')!.drawImage(canvas, 0, 0, 500, 500);
-        body.drawing = tmp.toDataURL('image/jpeg', 0.85);
+        tmp.width = 300; tmp.height = 300;
+        tmp.getContext('2d')!.drawImage(canvas, 0, 0, 300, 300);
+        body.drawing = tmp.toDataURL('image/jpeg', 0.75);
       }
       const res = await fetch('/api/logbook', {
         method: 'POST',
@@ -206,7 +224,11 @@
   }
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape' && showModal) closeModal();
+    if (e.key === 'Escape') {
+      if (fullMessageEntry) { fullMessageEntry = null; return; }
+      if (deleteId !== null) { closeDelete(); return; }
+      if (showModal) closeModal();
+    }
   }
 
   function formatDate(ts: number) {
@@ -251,7 +273,11 @@
               <span class="entry-name">{entry.name}</span>
               <span class="entry-date">{formatDate(entry.created_at)}</span>
             </div>
-            <div class="entry-message">{entry.message ?? ''}</div>
+            {@const { short, truncated } = truncate(entry.message ?? '')}
+            <div class="entry-message">{short}</div>
+            {#if truncated}
+              <button class="show-more" on:click={() => fullMessageEntry = entry}>show more</button>
+            {/if}
           {/if}
         </article>
       {/each}
@@ -294,19 +320,28 @@
           </label>
           <button class="invert-btn" on:click={() => initCanvas()}>clear</button>
         </div>
-        <canvas
-          bind:this={canvas}
-          width="1000"
-          height="1000"
-          class="draw-canvas"
-          on:mousedown={startDraw}
-          on:mousemove={onDraw}
-          on:mouseup={stopDraw}
-          on:mouseleave={stopDraw}
-          on:touchstart|preventDefault={startDraw}
-          on:touchmove|preventDefault={onDraw}
-          on:touchend={stopDraw}
-        ></canvas>
+        <div class="canvas-wrap">
+          <canvas
+            bind:this={canvas}
+            width="1000"
+            height="1000"
+            class="draw-canvas"
+            on:mousedown={startDraw}
+            on:mousemove={onDraw}
+            on:mouseup={stopDraw}
+            on:mouseleave={() => { stopDraw(); showCursor = false; }}
+            on:mouseenter={() => showCursor = true}
+            on:touchstart|preventDefault={startDraw}
+            on:touchmove|preventDefault={onDraw}
+            on:touchend={stopDraw}
+          ></canvas>
+          {#if showCursor}
+            <div
+              class="canvas-cursor"
+              style="left:{cursorX}px; top:{cursorY}px; width:{brushSize * 2}px; height:{brushSize * 2}px; border-color:{drawColor === '#ffffff' ? '#666' : drawColor};"
+            ></div>
+          {/if}
+        </div>
       {/if}
 
       <input
@@ -338,6 +373,21 @@
   </div>
 {/if}
 
+{#if fullMessageEntry}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div class="modal-backdrop" on:click|self={() => fullMessageEntry = null}>
+    <div class="modal full-message-modal" role="dialog" aria-modal="true">
+      <button class="modal-close" on:click={() => fullMessageEntry = null} aria-label="Close">✕</button>
+      <div class="full-message-header">
+        <span class="entry-name">{fullMessageEntry.name}</span>
+        <span class="entry-date">{formatDate(fullMessageEntry.created_at)}</span>
+      </div>
+      <p class="full-message-body">{fullMessageEntry.message ?? ''}</p>
+    </div>
+  </div>
+{/if}
+
 {#if deleteId !== null}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -365,10 +415,12 @@
 
 <style>
   .logbook-wrap {
+    max-width: none;
     display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 2rem;
+    grid-template-columns: 200px 1fr;
+    gap: 2.5rem;
     align-items: start;
+    padding-inline: 2rem;
   }
 
   .logbook-side {
@@ -423,6 +475,50 @@
   .entry-card:hover .entry-delete { opacity: 1; }
 
   .delete-modal { max-width: 340px; gap: 0.75rem; }
+
+  .show-more {
+    background: none;
+    border: none;
+    color: var(--link);
+    font: inherit;
+    font-size: 11px;
+    padding: 2px 10px 6px;
+    cursor: pointer;
+    text-align: left;
+    flex-shrink: 0;
+  }
+  .show-more:hover { text-decoration: underline; }
+
+  .full-message-modal { max-width: 480px; gap: 0.75rem; }
+  .full-message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-block-end: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .full-message-body { margin: 0; font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
+
+  .canvas-wrap { position: relative; }
+
+  .draw-canvas {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 1px solid var(--border);
+    cursor: none;
+    touch-action: none;
+    display: block;
+    background: #fff;
+  }
+
+  .canvas-cursor {
+    position: absolute;
+    border: 2px solid;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: multiply;
+  }
 
   .entry-header, .entry-footer {
     display: flex;
@@ -545,15 +641,6 @@
     opacity: 0.7;
   }
 
-  .draw-canvas {
-    width: 100%;
-    aspect-ratio: 1;
-    border: 1px solid var(--border);
-    cursor: crosshair;
-    touch-action: none;
-    display: block;
-    background: #fff;
-  }
 
   .bot-check { display: flex; flex-direction: column; gap: 0.5rem; font-size: 13px; }
   .bot-check p { margin: 0; }
