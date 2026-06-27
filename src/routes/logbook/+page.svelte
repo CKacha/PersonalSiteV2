@@ -321,7 +321,7 @@
         <button class="invert-btn" on:click={handleSubmit}>submit</button>
       {:else}
         <div class="bot-check">
-          <p>type <strong>Iamnotarobot</strong> to confirm:</p>
+          <p>type <strong>Iamnotarobot</strong> to confirm: (you aren't a bot right)</p>
           <div class="bot-row">
             <input class="modal-field" bind:value={botCheck} placeholder="Iamnotarobot" />
             <button class="invert-btn" on:click={confirmSubmit} disabled={submitting}>
