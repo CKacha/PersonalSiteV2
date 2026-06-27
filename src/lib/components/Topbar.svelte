@@ -6,7 +6,7 @@
     { href: `${base}/`, label: 'home' },
     { href: `${base}/projects`, label: 'my projects' },
     { href: `${base}/logbook`, label: 'logbook' },
-    { href: `${base}/blog`, label: 'blog' }
+    { href: 'https://ckacha.github.io/blawg/', label: 'blog' }
   ];
 
   const KEY = 'theme';
@@ -66,7 +66,7 @@
 <header class="topbar">
   <nav class="tabs">
     {#each links as link}
-      <a href={link.href} class="tab">{link.label}</a>
+      <a href={link.href} class="tab" target={link.href.startsWith('http') ? '_blank' : undefined} rel={link.href.startsWith('http') ? 'noreferrer' : undefined}>{link.label}</a>
     {/each}
   </nav>
 

@@ -31,7 +31,7 @@
   <h1>Hi! I'm Ckacha</h1>
   <p>I'm a teenager that make things sometimes :p</p>
   <p>Currently my main focus is doing cool things at <a href="https://hackclub.com" target="_blank" rel="noreferrer">Hack Club</a></p>
-  <p>I also like listening to music, playing Gacha Games, and writing on my Blawg(blog)</p>
+  <p>I also like listening to music, playing Gacha Games, and writing on my <a href="https://ckacha.github.io/blawg/" target="_blank" rel="noreferrer">Blawg</a></p>
   <section aria-label="my socials" class="ticker b-solid">
     <div class="ticker-head">my socials</div>
 
