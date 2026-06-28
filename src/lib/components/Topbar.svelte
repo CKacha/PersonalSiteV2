@@ -6,7 +6,8 @@
     { href: `${base}/`, label: 'home' },
     { href: `${base}/projects`, label: 'my projects' },
     { href: `${base}/logbook`, label: 'logbook' },
-    { href: 'https://ckacha.github.io/blawg/', label: 'blog' }
+    { href: 'https://ckacha.github.io/blawg/', label: 'blog' },
+    { href: `${base}/old`, label: 'v1' }
   ];
 
   const KEY = 'theme';

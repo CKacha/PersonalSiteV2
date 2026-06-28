@@ -7,3 +7,4 @@ build
 !.env.example
 
 .svelte-kit/
+.wrangler/
