@@ -19,17 +19,13 @@
 
   onMount(async () => {
     try {
-      const res = await fetch('/api/funny');
-      if (res.status === 404) {
-        error = "reddit said no :( (or if you're localhosting this it won't work)";
-        return;
-      }
+      const res = await fetch('https://www.reddit.com/r/shitposting/top.json?limit=1&t=day');
       if (!res.ok) throw new Error(`${res.status}`);
       const json = await res.json();
       post = json.data.children[0]?.data ?? null;
       if (!post) error = 'nothing today apparently';
     } catch (e) {
-      error = 'reddit said no';
+      error = 'reddit said no :(';
     } finally {
       loading = false;
     }
