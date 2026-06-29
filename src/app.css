@@ -294,6 +294,11 @@ main {
 
 .version { font-size: 10px; }
 
+@keyframes v1-flash-pop { 0% { opacity:0; } 40% { opacity:1; } 100% { opacity:0; } }
+@keyframes v1-bar-left-out  { from { transform: translateX(-1px); } to { transform: translateX(calc(-50vw - 1px)); } }
+@keyframes v1-bar-right-out { from { transform: translateX( 1px); } to { transform: translateX(calc( 50vw + 1px)); } }
+@keyframes v1-blink { 50% { opacity: 0; } }
+
 a, a:visited { color: var(--link); text-decoration: none; }
 a:hover      { color: var(--link-hover); text-decoration: underline; }
 a:active,

@@ -19,7 +19,8 @@
 
   onMount(async () => {
     try {
-      const res = await fetch('https://www.reddit.com/r/shitposting/top.json?limit=1&t=day');
+      const target = encodeURIComponent('https://www.reddit.com/r/shitposting/top.json?limit=1&t=day');
+      const res = await fetch(`https://corsproxy.io/?url=${target}`);
       if (!res.ok) throw new Error(`${res.status}`);
       const json = await res.json();
       post = json.data.children[0]?.data ?? null;

@@ -229,7 +229,6 @@
     background: #fff; opacity: 0; pointer-events: none;
   }
   :global(.v1-flash--go) { animation: v1-flash-pop 220ms steps(2,end) 1 both; }
-  :global { @keyframes v1-flash-pop { 0% { opacity:0; } 40% { opacity:1; } 100% { opacity:0; } } }
 
   .v1-reveal {
     position: fixed; inset: 0; z-index: 9997;
@@ -241,13 +240,8 @@
   .v1-bar-right { left: 50%; transform: translateX(1px); }
   :global(.v1-reveal--go .v1-bar-left)  { animation: v1-bar-left-out  300ms steps(24,end) 1 forwards; }
   :global(.v1-reveal--go .v1-bar-right) { animation: v1-bar-right-out 300ms steps(24,end) 1 forwards; }
-  :global {
-    @keyframes v1-bar-left-out  { from { transform: translateX(-1px); } to { transform: translateX(calc(-50vw - 1px)); } }
-    @keyframes v1-bar-right-out { from { transform: translateX( 1px); } to { transform: translateX(calc( 50vw + 1px)); } }
-  }
 
   :global(.v1-type-caret::after) { content: "▮"; margin-left: 4px; animation: v1-blink 1s steps(1,end) infinite; }
-  :global { @keyframes v1-blink { 50% { opacity: 0; } } }
 
   .v1-topbar {
     position: sticky; top: 0; z-index: 10;
